@@ -66,63 +66,41 @@
             this.easyBtn = document.querySelector('#easy');
             this.mediumBtn = document.querySelector('#medium');
             this.hardBtn = document.querySelector('#hard');
+            this.bindOptions();
+            this.initListeners();
+            this.attemptCounter = 0;
+            this.firstChoise = {};
+            this.secondChoise = {};
             this.shuffledImages = [];
             this.shuffle(this.imgEasy);
             this.board = new Board(3, 4, this.gameBody, this.shuffledImages);
-            this.newGameBtn.addEventListener('click', () => this.newGame())
-            this.currentGameCounter = 0;
-            this.bindOptions();
-        }
-
-        initListeners() {
-
-            for (let i = 0; i < this.board.cells.length; i++) {
-                for (let j = 0; j < this.board.cells[i].length; j++) {
-
-                    console.log(this.board.cells[i][j]);
-                    this.board.cells[i][j].addEventListener('click', (e) => { this.onCardClick(e) })
-                }
-            }
-        }
-
-        newGame() {
-            this.initBoard(this.board.rows, this.board.columns, this.gameBody, this.board.images);
-        }
-
-        onCardClick(e) {
-
-            // if (e.target.innerHTML.trim() === "") {
-            //     this.currentGameCounter++;
-            //     e.target.innerHTML = this.currentTurn;
-
-            //     if (this.currentTurnCounter >= 5 && this.board.checkWon(this.currentTurn)) {
-            //         this.scores[this.currentTurn]++;
-            //         this.scoreElement.text(`${this.tic} : ${this.scores[this.tic]} ---------- ${this.tac} : ${this.scores[this.tac]}`)
-            //         alert(this.currentTurn + " Won!");
-            //         this.initApp();
-            //     } else if (this.currentTurnCounter === 9) {
-            //         alert("Tie!");
-            //         this.initApp();
-            //     } else {
-            //         this.currentTurn = this.currentTurn === this.tic ? this.tac : this.tic;
-            //     }
-            // }
         }
 
         bindOptions() {
-            // const easyBtn = document.querySelector('#easy');
-            // const mediumBtn = document.querySelector('#medium');
-            // const hardBtn = document.querySelector('#hard');
-
+            this.newGameBtn.addEventListener('click', () => this.newGame())
             this.easyBtn.addEventListener('click', () => { this.initBoard(3, 4, this.gameBody, this.imgEasy) });
             this.mediumBtn.addEventListener('click', () => { this.initBoard(3, 6, this.gameBody, this.imgMedium) });
             this.hardBtn.addEventListener('click', () => { this.initBoard(4, 6, this.gameBody, this.imgHard) });
         }
 
+        initListeners() {
+            for (let i = 0; i < this.board.cells.length; i++) {
+                for (let j = 0; j < this.board.cells[i].length; j++) {
+                    // console.log(this.board.cells[i][j]);
+                    this.board.cells[i][j].addEventListener('click', (e) => { this.onCardClick(e) })
+                }
+            }
+        }
+
         initBoard(rows, columns, gameBody, images) {
+            this.attemptCounter = 0;
             this.board.clearBoard();
             this.shuffle(images);
             this.board = new Board(rows, columns, gameBody, this.shuffledImages);
+        }
+
+        newGame() {
+            this.initBoard(this.board.rows, this.board.columns, this.gameBody, this.board.images);
         }
 
         shuffle(array) {
@@ -131,10 +109,40 @@
                 newArray.splice(Math.floor(Math.random() * array.length), 0, imgSrc)
             );
             this.shuffledImages = newArray;
-            console.log(this.shuffledImages);
-
+            // console.log(this.shuffledImages);
         }
 
+        onCardClick(e) {
+            if (Object.entries(this.firstChoise).length === 0 && this.firstChoise.constructor === Object) {
+                this.firstChoise = e.currentTarget;
+                this.firstChoise.classList.add('selected');
+            } else if (Object.entries(this.secondChoise).length === 0 && this.secondChoise.constructor === Object) {
+                this.secondChoise = e.currentTarget;
+                this.secondChoise.classList.add('selected');
+                const onHold = this.gameBody.querySelectorAll(':not(.selected)');
+                onHold.forEach(elem => elem.classList.add('paused'));
+            }
+            if (this.gameBody.querySelectorAll('.selected').length == 2) {
+                const firstImg = this.firstChoise.firstChild.children[1].firstChild;
+                const secondImg = this.secondChoise.firstChild.children[1].firstChild;
+                if (firstImg.src === secondImg.src) {
+                    setTimeout(() => {
+                        this.firstChoise.classList.add('delete');
+                        this.secondChoise.classList.add('delete');
+                    }, 1000)
+                } else {
+                    this.attemptCounter++;
+                }
+                setTimeout(() => {
+                        this.firstChoise.classList.remove('selected');
+                        this.secondChoise.classList.remove('selected');
+                        this.gameBody.querySelectorAll('.paused').forEach(elem => elem.classList.remove('paused'));
+                        this.firstChoise = {};
+                        this.secondChoise = {};
+                    }, 1000)
+                    // console.log(this.attemptCounter);
+            }
+        }
     }
 
     class Board {
@@ -187,81 +195,10 @@
             // return this.checkRows(currentTurn) || this.checkColumns(currentTurn) || this.checkDiagonal(currentTurn);
         }
 
-        // checkRows(currentTurn) {
-        //     for (let i = 0; i < this.cells.length; i++) {
-        //         if (
-        //             this.cells[i][0].innerHTML === currentTurn &&
-        //             this.cells[i][1].innerHTML === currentTurn &&
-        //             this.cells[i][2].innerHTML === currentTurn
-        //         ) {
-        //             return true;
-        //         }
-        //     }
-        //     return false;
-        // }
-
-        // checkColumns(currentTurn) {
-        //     for (let i = 0; i < this.cells.length; i++) {
-        //         if (
-        //             this.cells[0][i].innerHTML === currentTurn &&
-        //             this.cells[1][i].innerHTML === currentTurn &&
-        //             this.cells[2][i].innerHTML === currentTurn
-        //         ) {
-        //             return true;
-        //         }
-        //     }
-        //     return false;
-        // }
-
-        // checkDiagonal(currentTurn) {
-        //     if (
-        //         this.cells[0][0].innerHTML === currentTurn &&
-        //         this.cells[1][1].innerHTML === currentTurn &&
-        //         this.cells[2][2].innerHTML === currentTurn
-        //     ) {
-        //         return true;
-        //     }
-        //     if (
-        //         this.cells[0][2].innerHTML === currentTurn &&
-        //         this.cells[1][1].innerHTML === currentTurn &&
-        //         this.cells[2][0].innerHTML === currentTurn
-        //     ) {
-        //         return true;
-        //     }
-        //     return false
-        // }
-
         clearBoard() {
             this.rowGrid.forEach(row => row.remove())
         }
     }
 
-    // const createHtmlSkeleton = new Board(4, 6, document.querySelector('.game-container'), [
-    //     "./images/ca1.jpg",
-    //     "./images/ca1.jpg",
-    //     "./images/ca2.jpg",
-    //     "./images/ca2.jpg",
-    //     "./images/ca3.jpg",
-    //     "./images/ca3.jpg",
-    //     "./images/ca4.jpg",
-    //     "./images/ca4.jpg",
-    //     "./images/ca5.jpg",
-    //     "./images/ca5.jpg",
-    //     "./images/ca6.jpg",
-    //     "./images/ca6.jpg",
-    //     "./images/ca7.jpg",
-    //     "./images/ca7.jpg",
-    //     "./images/ca8.jpg",
-    //     "./images/ca8.jpg",
-    //     "./images/ca9.jpg",
-    //     "./images/ca9.jpg",
-    //     "./images/ca10.jpg",
-    //     "./images/ca10.jpg",
-    //     "./images/ca11.jpg",
-    //     "./images/ca11.jpg",
-    //     "./images/ca12.jpg",
-    //     "./images/ca12.jpg"
-    // ]);
-    // createHtmlSkeleton.clearBoard();
     const game = new Game();
 }
