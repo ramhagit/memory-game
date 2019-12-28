@@ -1,14 +1,69 @@
 body {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: space-around; */
+    /* align-items: center; */
     height: 100vh;
     width: 100vw;
     margin: 0;
-    padding: 0;
+    padding: 0 5px;
+}
+
+.side-menu {
+    width: 330px;
+    height: 100%;
+    border: black 1px solid;
+    box-sizing: border-box;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.difficulty {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+button {
+    cursor: pointer;
+    flex-basis: 90px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.score-board {
+    height: 70%;
+}
+
+.content {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    align-items: center;
+}
+
+.header {
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    margin: 0 50px 0 0;
+}
+
+#new-game {
+    height: 2rem;
+    cursor: pointer;
 }
 
 .game-container {
+    flex: 1;
     border: green 1px solid;
     /* width: 80%; */
     height: 90%;
@@ -52,6 +107,7 @@ body {
     /* height: inherit; */
     perspective: 1000px;
     margin: 1px;
+    cursor: pointer;
 }
 
 .flip-card-inner {
@@ -76,14 +132,15 @@ body {
     backface-visibility: hidden;
 }
 
-.flip-card-front {
+
+/* .flip-card-front {
     background-image: url('./images/backcard.jpg');
-    /* background-color: #bbb; */
-    /* color: black; */
-}
+    background-color: #bbb;
+    color: black;
+} */
 
 .flip-card-back {
-    background-color: #2980b9;
+    /* background-color: #2980b9; */
     /* color: white; */
     transform: rotateY(180deg);
 }
