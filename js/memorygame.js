@@ -66,14 +66,14 @@
             this.easyBtn = document.querySelector('#easy');
             this.mediumBtn = document.querySelector('#medium');
             this.hardBtn = document.querySelector('#hard');
-            this.bindOptions();
-            this.initListeners();
             this.attemptCounter = 0;
             this.firstChoise = {};
             this.secondChoise = {};
             this.shuffledImages = [];
             this.shuffle(this.imgEasy);
             this.board = new Board(3, 4, this.gameBody, this.shuffledImages);
+            this.bindOptions();
+            this.initListeners();
         }
 
         bindOptions() {
@@ -86,17 +86,20 @@
         initListeners() {
             for (let i = 0; i < this.board.cells.length; i++) {
                 for (let j = 0; j < this.board.cells[i].length; j++) {
-                    // console.log(this.board.cells[i][j]);
                     this.board.cells[i][j].addEventListener('click', (e) => { this.onCardClick(e) })
                 }
             }
         }
 
         initBoard(rows, columns, gameBody, images) {
+            this.gameBody.innerText = "";
             this.attemptCounter = 0;
+            this.firstChoise = {};
+            this.secondChoise = {};
             this.board.clearBoard();
             this.shuffle(images);
             this.board = new Board(rows, columns, gameBody, this.shuffledImages);
+            this.initListeners();
         }
 
         newGame() {
@@ -109,7 +112,6 @@
                 newArray.splice(Math.floor(Math.random() * array.length), 0, imgSrc)
             );
             this.shuffledImages = newArray;
-            // console.log(this.shuffledImages);
         }
 
         onCardClick(e) {
@@ -117,10 +119,12 @@
                 this.firstChoise = e.currentTarget;
                 this.firstChoise.classList.add('selected');
             } else if (Object.entries(this.secondChoise).length === 0 && this.secondChoise.constructor === Object) {
-                this.secondChoise = e.currentTarget;
-                this.secondChoise.classList.add('selected');
-                const onHold = this.gameBody.querySelectorAll(':not(.selected)');
-                onHold.forEach(elem => elem.classList.add('paused'));
+                if (this.firstChoise != e.currentTarget) {
+                    this.secondChoise = e.currentTarget;
+                    this.secondChoise.classList.add('selected');
+                    const onHold = this.gameBody.querySelectorAll(':not(.selected):not(.delete)');
+                    onHold.forEach(elem => elem.classList.add('paused'));
+                }
             }
             if (this.gameBody.querySelectorAll('.selected').length == 2) {
                 const firstImg = this.firstChoise.firstChild.children[1].firstChild;
@@ -129,18 +133,21 @@
                     setTimeout(() => {
                         this.firstChoise.classList.add('delete');
                         this.secondChoise.classList.add('delete');
-                    }, 1000)
+                    }, 1000);
                 } else {
                     this.attemptCounter++;
                 }
                 setTimeout(() => {
-                        this.firstChoise.classList.remove('selected');
-                        this.secondChoise.classList.remove('selected');
-                        this.gameBody.querySelectorAll('.paused').forEach(elem => elem.classList.remove('paused'));
-                        this.firstChoise = {};
-                        this.secondChoise = {};
-                    }, 1000)
-                    // console.log(this.attemptCounter);
+                    this.firstChoise.classList.remove('selected');
+                    this.secondChoise.classList.remove('selected');
+                    this.gameBody.querySelectorAll('.paused').forEach(elem => elem.classList.remove('paused'));
+                    this.firstChoise = {};
+                    this.secondChoise = {};
+                }, 1000);
+
+                if (this.gameBody.querySelectorAll('.delete').length === (this.board.rows * this.board.columns - 2)) {
+                    this.gameBody.innerText = `You won!\nThe number of failed attempts is: ${this.attemptCounter}`;
+                }
             }
         }
     }
@@ -191,14 +198,10 @@
             }
         }
 
-        checkWon(currentTurn) {
-            // return this.checkRows(currentTurn) || this.checkColumns(currentTurn) || this.checkDiagonal(currentTurn);
-        }
-
         clearBoard() {
             this.rowGrid.forEach(row => row.remove())
         }
     }
 
-    const game = new Game();
+    new Game();
 }
