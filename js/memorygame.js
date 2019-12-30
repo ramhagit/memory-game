@@ -146,7 +146,7 @@
                 }, 1000);
 
                 if (this.gameBody.querySelectorAll('.delete').length === (this.board.rows * this.board.columns - 2)) {
-                    this.gameBody.innerText = `You won!\nThe number of failed attempts is: ${this.attemptCounter}`;
+                    this.gameBody.innerText = `You won!\nThe number of failed attempts is:\n${this.attemptCounter}`;
                 }
             }
         }
@@ -177,7 +177,7 @@
                     const flipCardFront = document.createElement('div');
                     flipCardFront.classList.add('flip-card-front');
                     const imgFront = document.createElement('img');
-                    imgFront.src = "./images/backcard.jpg";
+                    imgFront.src = "./images/backcard2.jpg";
                     imgFront.alt = "back card";
                     const flipCardBack = document.createElement('div');
                     flipCardBack.classList.add('flip-card-back');
